@@ -64,10 +64,11 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>3.0.0-M7</version>
         <configuration>
+        <!--
           <argLine>
             -Djava.util.logging.config.file=${project.build.testOutputDirectory}/logging.properties
-            -Djna.library.path=/usr/local/lib
           </argLine>
+          -->
           <trimStackTrace>false</trimStackTrace>
         </configuration>
       </plugin>
@@ -107,7 +108,12 @@
     <dependency>
       <groupId>net.java.dev.jna</groupId>
       <artifactId>jna</artifactId>
-      <version>5.12.1</version>
+      <version>5.14.0</version>
+    </dependency>
+    <dependency>
+	    <groupId>com.nativelibs4java</groupId>
+	<artifactId>jnaerator-runtime</artifactId>
+            <version>${jnaerator.version}</version>
     </dependency>
 
     <dependency>
