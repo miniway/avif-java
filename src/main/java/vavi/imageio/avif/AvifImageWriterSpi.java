@@ -9,6 +9,7 @@ package vavi.imageio.avif;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Locale;
+
 import javax.imageio.ImageTypeSpecifier;
 import javax.imageio.ImageWriter;
 import javax.imageio.spi.ImageWriterSpi;

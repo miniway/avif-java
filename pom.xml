@@ -111,11 +111,10 @@
       <version>5.14.0</version>
     </dependency>
     <dependency>
-	    <groupId>com.nativelibs4java</groupId>
-	<artifactId>jnaerator-runtime</artifactId>
-            <version>${jnaerator.version}</version>
-    </dependency>
-
+      <groupId>com.nativelibs4java</groupId>
+        <artifactId>jnaerator-runtime</artifactId>
+        <version>${jnaerator.version}</version>
+      </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>

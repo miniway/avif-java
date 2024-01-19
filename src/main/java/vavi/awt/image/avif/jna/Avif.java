@@ -7,6 +7,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.nio.ByteBuffer;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
@@ -17,10 +18,7 @@ import vavi.awt.image.jna.avif.avifImage;
 import vavi.awt.image.jna.avif.avifRGBImage;
 import vavi.awt.image.jna.avif.avifROData;
 import vavi.awt.image.jna.avif.avifRWData;
-import vavi.util.Debug;
-import vavi.util.StringUtil;
 import com.ochafik.lang.jnaerator.runtime.NativeSize;
-
 
 /**
  * An AVIF Decoder.
@@ -29,14 +27,26 @@ import com.ochafik.lang.jnaerator.runtime.NativeSize;
  */
 public class Avif {
 
+    private static boolean available = false;
+    private static Logger LOGGER = Logger.getLogger(Avif.class.getName());
     private static final Avif avif = new Avif();
 
     // This is a utility class and cannot be instantiated.
     private Avif() {
-        String version = AvifLibrary.INSTANCE.avifVersion();
-        if (!version.startsWith("1.0.3")) {
-            Debug.println(Level.SEVERE, "wrong version: " + version);
+        try {
+            String version = AvifLibrary.INSTANCE.avifVersion();
+            if (!version.startsWith("1.0.3")) {
+                LOGGER.log(Level.SEVERE, "wrong version: " + version);
+            }
         }
+        catch (Throwable t) {
+            LOGGER.log(Level.SEVERE, t.getMessage());
+        }
+        available = true;
+    }
+
+    public static boolean available() {
+        return available;
     }
 
     public static Avif getInstance() {
@@ -67,7 +77,7 @@ public class Avif {
         Pointer buffer = Native.getDirectBufferPointer(encoded);
         avifDecoder decoder = createDecoderAndParse(buffer, length, Runtime.getRuntime().availableProcessors());
         BufferedImage image = new BufferedImage(decoder.image.width, decoder.image.height, BufferedImage.TYPE_4BYTE_ABGR);
-Debug.println(Level.FINER, "image depth: " + decoder.image.depth);
+LOGGER.log(Level.FINER, "image depth: " + decoder.image.depth);
         return image;
     }
 
@@ -155,7 +165,7 @@ Debug.println(Level.FINER, "image depth: " + decoder.image.depth);
 
     /** Encodes the java image into the AVIF image. */
     public ByteBuffer encode(BufferedImage bitmap, int quality) {
-Debug.println(Level.FINE, "depth: " + bitmap.getColorModel().getPixelSize() / bitmap.getColorModel().getNumComponents());
+        LOGGER.log(Level.FINE, "depth: " + bitmap.getColorModel().getPixelSize() / bitmap.getColorModel().getNumComponents());
         avifImage image = AvifLibrary.INSTANCE.avifImageCreate(bitmap.getWidth(), bitmap.getHeight(), bitmap.getColorModel().getPixelSize() / bitmap.getColorModel().getNumComponents(), AvifLibrary.avifPixelFormat.AVIF_PIXEL_FORMAT_YUV444); // these values dictate what goes into the final AVIF
         if (image == null) {
             throw new OutOfMemoryError("avifImageCreate");
@@ -172,7 +182,7 @@ Debug.println(Level.FINE, "depth: " + bitmap.getColorModel().getPixelSize() / bi
         // * transforms (transformFlags, pasp, clap, irot, imir)
 
         // If you have RGB(A) data you want to encode, use this path
-Debug.printf(Level.FINE, "Encoding from converted RGBA");
+        LOGGER.log(Level.FINE, "Encoding from converted RGBA");
 
         if (bitmap.getType() != BufferedImage.TYPE_4BYTE_ABGR) {
             throw new IllegalStateException(String.format("Bitmap format (%d) is not supported.", bitmap.getType()));
@@ -188,7 +198,7 @@ Debug.printf(Level.FINE, "Encoding from converted RGBA");
 //        ByteBuffer nativeBuffer = ByteBuffer.allocateDirect(bitmap.getWidth() * bitmap.getHeight() * bytes);
 //        rgb.pixels = Native.getDirectBufferPointer(nativeBuffer);
 //        rgb.rowBytes = bitmap.getWidth() * bytes;
-//Debug.printf(Level.FINE, StringUtil.paramString(rgb));
+        //LOGGER.log(Level.FINE, StringUtil.paramString(rgb));
 
         nativeBuffer.put(((DataBufferByte) bitmap.getRaster().getDataBuffer()).getData());
 
@@ -228,7 +238,7 @@ Debug.printf(Level.FINE, "Encoding from converted RGBA");
             throw new IllegalStateException(String.format("Failed to finish encode: %s", AvifLibrary.INSTANCE.avifResultToString(finishResult)));
         }
 
-Debug.printf(Level.FINE, "Encode success: %d total bytes", avifOutput.size.longValue());
+        LOGGER.log(Level.FINE, "Encode success: %d total bytes", avifOutput.size.longValue());
 
         AvifLibrary.INSTANCE.avifRGBImageFreePixels(rgb);
         AvifLibrary.INSTANCE.avifEncoderDestroy(encoder);

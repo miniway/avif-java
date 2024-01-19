@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.imageio.IIOException;
 import javax.imageio.ImageReadParam;
 import javax.imageio.ImageReader;
@@ -25,7 +27,6 @@ import javax.imageio.stream.ImageInputStream;
 
 import vavi.awt.image.avif.jna.Avif;
 import vavi.imageio.WrappedImageInputStream;
-import vavi.util.Debug;
 
 
 /**
@@ -36,6 +37,7 @@ import vavi.util.Debug;
  */
 public class AvifImageReader extends ImageReader {
 
+    private static Logger LOGGER = Logger.getLogger(AvifImageReader.class.getName());
     /** */
     private BufferedImage image;
 
@@ -72,8 +74,8 @@ public class AvifImageReader extends ImageReader {
     public BufferedImage read(int imageIndex, ImageReadParam param)
         throws IIOException {
 
-Debug.println(Level.FINE, "decode start");
-long t = System.currentTimeMillis();
+        LOGGER.log(Level.FINE, "decode start");
+        long t = System.currentTimeMillis();
         InputStream stream = new WrappedImageInputStream((ImageInputStream) input);
 
         try {
@@ -85,7 +87,7 @@ long t = System.currentTimeMillis();
                 baos.write(b, 0, r);
             }
             int l = baos.size();
-Debug.println(Level.FINE, "size: " + l);
+            LOGGER.log(Level.FINE, "size: " + l);
             ByteBuffer bb = ByteBuffer.allocateDirect(l);
             bb.put(baos.toByteArray(), 0, l);
 
@@ -95,8 +97,8 @@ Debug.println(Level.FINE, "size: " + l);
             return avif.decode(bb, l, image);
         } catch (IOException e) {
             throw new IIOException(e.getMessage(), e);
-} finally {
-Debug.println(Level.FINE, "time: " + (System.currentTimeMillis() - t));
+        } finally {
+            LOGGER.log(Level.FINE, "time: " + (System.currentTimeMillis() - t));
         }
     }
 

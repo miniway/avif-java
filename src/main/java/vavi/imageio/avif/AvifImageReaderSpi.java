@@ -11,13 +11,13 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Locale;
 import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.imageio.ImageReader;
 import javax.imageio.spi.ImageReaderSpi;
 import javax.imageio.stream.ImageInputStream;
 
 import vavi.awt.image.avif.jna.Avif;
-import vavi.util.Debug;
-
 
 /**
  * AvifImageReaderSpi.
@@ -26,6 +26,8 @@ import vavi.util.Debug;
  * @version 0.00 2022-09-07 umjammer initial version <br>
  */
 public class AvifImageReaderSpi extends ImageReaderSpi {
+
+    private static Logger LOGGER = Logger.getLogger(AvifImageReaderSpi.class.getName());
 
     private static final String VendorName = "https://github.com/umjammer/vavi-image-avif";
     private static final String Version = "0.0.4";
@@ -81,7 +83,7 @@ public class AvifImageReaderSpi extends ImageReaderSpi {
 
     @Override
     public boolean canDecodeInput(Object obj) throws IOException {
-Debug.println(Level.FINE, "input: " + obj);
+        LOGGER.log(Level.FINE, "input: " + obj);
         if (obj instanceof ImageInputStream) {
             ImageInputStream stream = (ImageInputStream) obj;
             stream.mark();
@@ -93,7 +95,7 @@ Debug.println(Level.FINE, "input: " + obj);
                 baos.write(b, 0, r);
             }
             int l = baos.size();
-Debug.println(Level.FINE, "size: " + l);
+            LOGGER.log(Level.FINE, "size: " + l);
             ByteBuffer bb = ByteBuffer.allocateDirect(l);
             bb.put(baos.toByteArray(), 0, l);
             stream.reset();
