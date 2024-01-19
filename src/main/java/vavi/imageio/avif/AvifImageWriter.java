@@ -7,25 +7,20 @@
 package vavi.imageio.avif;
 
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.logging.Level;
-import javax.imageio.IIOException;
+import java.util.logging.Logger;
+
 import javax.imageio.IIOImage;
 import javax.imageio.ImageTypeSpecifier;
 import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.spi.ImageWriterSpi;
-import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.ImageOutputStream;
 
 import vavi.awt.image.avif.jna.Avif;
-import vavi.imageio.WrappedImageInputStream;
-import vavi.util.Debug;
-
 
 /**
  * AvifImageWriter.
@@ -35,6 +30,7 @@ import vavi.util.Debug;
  */
 public class AvifImageWriter extends ImageWriter {
 
+    private static Logger LOGGER = Logger.getLogger(AvifImageReaderSpi.class.getName());
     /**
      * Constructs an <code>ImageWriter</code> and sets its
      * <code>originatingProvider</code> instance variable to the
@@ -75,7 +71,7 @@ public class AvifImageWriter extends ImageWriter {
 
     @Override
     public void write(IIOMetadata streamMetadata, IIOImage image, ImageWriteParam param) throws IOException {
-long t = System.currentTimeMillis();
+        long t = System.currentTimeMillis();
         try {
             Avif avif = Avif.getInstance();
             ByteBuffer bn = avif.encode((BufferedImage) image.getRenderedImage(), 60);
@@ -85,7 +81,7 @@ long t = System.currentTimeMillis();
             ios.write(bb.array());
             ios.flush();
         } finally {
-Debug.println(Level.FINE, "time: " + (System.currentTimeMillis() - t));
+            LOGGER.log(Level.FINE, "time: " + (System.currentTimeMillis() - t));
         }
     }
 }
