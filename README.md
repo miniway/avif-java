@@ -11,7 +11,7 @@ based on https://github.com/AOMediaCodec/libavif/tree/main/android_jni
 
  * install `libavif` e.g. `brew intall libavif`
  * https://jitpack.io/#miniway/avif-java
- * add `-Djna.library.path=/usr/local/lib` for jvm args or `-Djna.library.path=/Users/min/work/wef/avif-java/libs/Darwin/arm64/`
+ * add `-Djna.library.path=/usr/local/lib` for jvm args or `-Djna.library.path=`pwd`/src/main/resources/libs/Darwin/arm64/`
 
 ## Usage
 
