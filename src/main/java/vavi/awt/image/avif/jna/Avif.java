@@ -38,11 +38,11 @@ public class Avif {
             if (!version.startsWith("1.0.3")) {
                 LOGGER.log(Level.SEVERE, "wrong version: " + version);
             }
+            available = true;
         }
         catch (Throwable t) {
             LOGGER.log(Level.SEVERE, t.getMessage());
         }
-        available = true;
     }
 
     public static boolean available() {
